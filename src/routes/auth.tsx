@@ -38,10 +38,10 @@ function AuthPage() {
   const [username, setUsername] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const needsUsername = !!session && ready && !profile;
+  const needsUsername = !!session && ready && (!profile || !profile.username_set);
 
   useEffect(() => {
-    if (session && profile) void navigate({ to: "/", replace: true });
+    if (session && profile?.username_set) void navigate({ to: "/", replace: true });
   }, [session, profile, navigate]);
 
   async function submit(e: React.FormEvent) {

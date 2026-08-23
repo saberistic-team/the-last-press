@@ -14,6 +14,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { SiteFooter } from "@/components/SiteFooter";
+import { CheckoutReturn } from "@/components/CheckoutReturn";
 
 
 function NotFoundComponent() {
@@ -149,6 +151,8 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <PaymentTestModeBanner />
       <Outlet />
+      <SiteFooter />
+      <CheckoutReturn />
       <Toaster position="top-center" />
     </QueryClientProvider>
   );
