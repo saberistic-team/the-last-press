@@ -280,6 +280,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bot_press: { Args: never; Returns: Json }
+      crowd_tick: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
