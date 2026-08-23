@@ -47,7 +47,7 @@ const rules = [
   {
     n: "05",
     t: "The winner sets the next clock",
-    d: `The champion chooses to double, halve or keep the duration, within ${formatDuration(MIN_DURATION_MS)} and ${formatDuration(MAX_DURATION_MS)}.`,
+    d: `The champion moves the clock one step up, one step down, or keeps it — 1h, 3h, 6h, 12h, 1 day, 3 days, 1 week, 2 weeks, 1 month. Seasons start at ${formatDuration(DEFAULT_DURATION_MS)}.`,
   },
   {
     n: "06",

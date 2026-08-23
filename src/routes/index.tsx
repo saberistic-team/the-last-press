@@ -18,6 +18,7 @@ import {
   nextDurationMs,
   MAX_DURATION_MS,
   MIN_DURATION_MS,
+  DEFAULT_DURATION_MS,
 } from "@/lib/game";
 import { sfx } from "@/lib/feedback";
 
@@ -53,7 +54,7 @@ function Live() {
   const lastTick = useRef(-1);
 
   const season = data?.current ?? null;
-  const duration = season?.duration_ms ?? MIN_DURATION_MS;
+  const duration = season?.duration_ms ?? DEFAULT_DURATION_MS;
   const remaining = season?.status === "active" ? remainingMs(season.timer_expires_at) : 0;
   const intensity = intensityFor(remaining, duration);
 
