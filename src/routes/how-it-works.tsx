@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TopNav } from "@/components/TopNav";
+import { MembershipButton } from "@/components/MembershipButton";
 import { formatDuration, DEFAULT_DURATION_MS } from "@/lib/game";
 
 export const Route = createFileRoute("/how-it-works")({
@@ -91,12 +92,9 @@ function HowItWorks() {
           <p className="mt-4 text-xs text-muted-foreground">
             Watching, the live timer and every profile stay free forever.
           </p>
-          <Link
-            to="/auth"
-            className="mt-6 inline-block rounded-sm bg-primary px-6 py-3 label-caps text-xs text-primary-foreground"
-          >
-            Create an account
-          </Link>
+          <div className="mt-6">
+            <MembershipButton />
+          </div>
         </section>
       </main>
     </div>
