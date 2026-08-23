@@ -14,6 +14,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as RefundsRouteImport } from './routes/refunds'
 import { Route as SeasonsRouteImport } from './routes/seasons'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PlayersUsernameRouteImport } from './routes/players.$username'
@@ -44,6 +45,11 @@ const HowItWorksRoute = HowItWorksRouteImport.update({
   path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RefundsRoute = RefundsRouteImport.update({
+  id: '/refunds',
+  path: '/refunds',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SeasonsRoute = SeasonsRouteImport.update({
   id: '/seasons',
   path: '/seasons',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/refunds': typeof RefundsRoute
   '/seasons': typeof SeasonsRoute
   '/terms': typeof TermsRoute
   '/players/$username': typeof PlayersUsernameRoute
@@ -83,6 +90,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/refunds': typeof RefundsRoute
   '/seasons': typeof SeasonsRoute
   '/terms': typeof TermsRoute
   '/players/$username': typeof PlayersUsernameRoute
@@ -95,6 +103,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/refunds': typeof RefundsRoute
   '/seasons': typeof SeasonsRoute
   '/terms': typeof TermsRoute
   '/players/$username': typeof PlayersUsernameRoute
@@ -108,6 +117,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/how-it-works'
+    | '/refunds'
     | '/seasons'
     | '/terms'
     | '/players/$username'
@@ -119,6 +129,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/how-it-works'
+    | '/refunds'
     | '/seasons'
     | '/terms'
     | '/players/$username'
@@ -130,6 +141,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/how-it-works'
+    | '/refunds'
     | '/seasons'
     | '/terms'
     | '/players/$username'
@@ -142,6 +154,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  RefundsRoute: typeof RefundsRoute
   SeasonsRoute: typeof SeasonsRoute
   TermsRoute: typeof TermsRoute
   PlayersUsernameRoute: typeof PlayersUsernameRoute
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/refunds': {
+      id: '/refunds'
+      path: '/refunds'
+      fullPath: '/refunds'
+      preLoaderRoute: typeof RefundsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/seasons': {
       id: '/seasons'
       path: '/seasons'
@@ -222,6 +242,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   HowItWorksRoute: HowItWorksRoute,
+  RefundsRoute: RefundsRoute,
   SeasonsRoute: SeasonsRoute,
   TermsRoute: TermsRoute,
   PlayersUsernameRoute: PlayersUsernameRoute,
