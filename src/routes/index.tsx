@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { MembershipButton } from "@/components/MembershipButton";
 import { TopNav } from "@/components/TopNav";
 import { Countdown } from "@/components/game/Countdown";
 import { PressButton } from "@/components/game/PressButton";
