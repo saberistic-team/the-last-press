@@ -122,7 +122,7 @@ export const adminOverview = createServerFn({ method: "GET" })
         db.from("profiles").select("id", { count: "exact", head: true }).eq("is_member", true),
         db.from("presses").select("*").order("pressed_at", { ascending: false }).limit(25),
       ]);
-    return { seasons: seasons ?? [], players: players ?? 0, members: members ?? 0, presses: presses ?? 0 && presses };
+    return { seasons: seasons ?? [], players: players ?? 0, members: members ?? 0, presses: presses ?? [] };
   });
 
 export const adminUpdateSeason = createServerFn({ method: "POST" })
@@ -130,11 +130,11 @@ export const adminUpdateSeason = createServerFn({ method: "POST" })
   .inputValidator((input: { seasonId: string; duration_ms?: number; status?: string }) => input)
   .handler(async ({ data, context }) => {
     const db = await assertAdmin(context.userId);
-    const patch: Record<string, unknown> = {};
+    const patch: { duration_ms?: number; status?: string } = {};
     if (typeof data.duration_ms === "number") {
-      patch["duration_ms"] = Math.min(604800000, Math.max(300000, Math.round(data.duration_ms)));
+      patch.duration_ms = Math.min(604800000, Math.max(300000, Math.round(data.duration_ms)));
     }
-    if (data.status) patch["status"] = data.status;
+    if (data.status) patch.status = data.status;
     const { error } = await db.from("seasons").update(patch).eq("id", data.seasonId);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -171,7 +171,7 @@ export const adminSettle = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const db = await assertAdmin(context.userId);
     const { data } = await db.rpc("settle_seasons");
-    return data as unknown;
+    return { result: JSON.stringify(data ?? null) };
   });
 
 export const adminSetBanned = createServerFn({ method: "POST" })
