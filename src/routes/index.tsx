@@ -222,15 +222,15 @@ function NextDurationPicker({ current }: { current: number }) {
   }
 
   const options: Array<{ key: "double" | "half" | "keep"; label: string }> = [
-    { key: "half", label: "Halve it" },
+    { key: "half", label: "One step shorter" },
     { key: "keep", label: "Keep it" },
-    { key: "double", label: "Double it" },
+    { key: "double", label: "One step longer" },
   ];
 
   return (
     <div className="mt-6">
       <p className="label-caps text-[10px] text-muted-foreground">
-        You won. Choose the next season's clock ({formatDuration(MIN_DURATION_MS)} –{" "}
+        You won. Move the next season's clock one step ({formatDuration(MIN_DURATION_MS)} –{" "}
         {formatDuration(MAX_DURATION_MS)})
       </p>
       <div className="mt-3 flex flex-wrap justify-center gap-2">
