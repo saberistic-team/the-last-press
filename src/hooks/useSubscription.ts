@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { getPaddleEnvironment } from "@/lib/paddle";
@@ -17,6 +17,9 @@ export function useSubscription() {
   const { session, ready } = useSession();
   const userId = session?.user.id ?? null;
   const qc = useQueryClient();
+  // Several components use this hook at once; each needs its own channel
+  // topic, otherwise supabase reuses the subscribed channel and `.on()` throws.
+  const instanceId = useId();
 
   const query = useQuery({
     queryKey: ["subscription", userId],
@@ -38,7 +41,7 @@ export function useSubscription() {
   useEffect(() => {
     if (!userId) return;
     const channel = supabase
-      .channel(`subs-${userId}`)
+      .channel(`subs-${userId}-${instanceId}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "subscriptions", filter: `user_id=eq.${userId}` },
@@ -51,7 +54,7 @@ export function useSubscription() {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [userId, qc]);
+  }, [userId, qc, instanceId]);
 
   const sub = query.data ?? null;
   const endsAt = sub?.current_period_end ? new Date(sub.current_period_end) : null;

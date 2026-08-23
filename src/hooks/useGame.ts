@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useId } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { getServerTime } from "@/lib/game.functions";
@@ -54,13 +54,15 @@ export function useGame() {
     staleTime: 1000,
   });
 
+  const instanceId = useId();
+
   useEffect(() => {
     void getServerTime().then((r) => setClockOffset(r.now));
   }, []);
 
   useEffect(() => {
     const channel = supabase
-      .channel("last-person-live")
+      .channel(`last-person-live-${instanceId}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "seasons" }, () => {
         void qc.invalidateQueries({ queryKey: ["game"] });
       })
@@ -71,7 +73,7 @@ export function useGame() {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [qc]);
+  }, [qc, instanceId]);
 
   return query;
 }
