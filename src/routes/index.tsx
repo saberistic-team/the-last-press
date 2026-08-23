@@ -171,6 +171,17 @@ function Live() {
             />
           </div>
 
+          {session && profile && !profile.is_member && (
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <p className="text-xs text-muted-foreground">
+                {profile.presses_remaining <= 0
+                  ? "Out of presses. Membership adds 10 every month."
+                  : "Members get 10 extra presses every month."}
+              </p>
+              <MembershipButton />
+            </div>
+          )}
+
           <dl className="mt-12 grid w-full max-w-lg grid-cols-3 gap-4 border-t border-border/60 pt-6 text-center">
             <div>
               <dt className="label-caps text-[10px] text-muted-foreground">Players</dt>
