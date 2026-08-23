@@ -36,13 +36,16 @@ export function PressButton({
 
   if (!signedIn) {
     return (
-      <div className="flex flex-col items-center gap-3">
-        <Link
-          to="/auth"
-          className="rounded-full bg-primary px-12 py-6 font-display text-xl font-bold uppercase tracking-widest text-primary-foreground shadow-[0_0_60px_-10px_var(--primary)] transition-transform hover:scale-[1.03]"
-        >
-          Join to press
-        </Link>
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative">
+          <span className="animate-pulse-ring absolute inset-0 rounded-full border-2 border-primary" />
+          <Link
+            to="/auth"
+            className="relative size-44 flex items-center justify-center rounded-full bg-primary font-display text-lg font-bold uppercase tracking-widest text-primary-foreground shadow-[0_0_80px_-16px_var(--primary)] transition-all hover:scale-[1.02] active:scale-95 sm:size-52"
+          >
+            Join to press
+          </Link>
+        </div>
         <p className="text-xs text-muted-foreground">Spectating is free. Pressing needs an account.</p>
       </div>
     );
