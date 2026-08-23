@@ -303,6 +303,7 @@ export type Database = {
     Functions: {
       bot_press: { Args: never; Returns: Json }
       crowd_tick: { Args: never; Returns: Json }
+      duration_buckets: { Args: never; Returns: number[] }
       has_active_subscription: {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean
