@@ -49,12 +49,18 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: { emailRedirectTo: `${window.location.origin}/auth` },
         });
         if (error) throw error;
+        // With email confirmation on, signUp returns no session — the account
+        // isn't usable until they click the link.
+        if (!data.session) {
+          void navigate({ to: "/check-email", search: { email }, replace: true });
+          return;
+        }
         toast.success("Account created.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
