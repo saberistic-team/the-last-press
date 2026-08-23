@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as SeasonsRouteImport } from './routes/seasons'
 import { Route as PlayersUsernameRouteImport } from './routes/players.$username'
 
@@ -22,6 +23,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowItWorksRoute = HowItWorksRouteImport.update({
+  id: '/how-it-works',
+  path: '/how-it-works',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SeasonsRoute = SeasonsRouteImport.update({
@@ -38,12 +44,14 @@ const PlayersUsernameRoute = PlayersUsernameRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/seasons': typeof SeasonsRoute
   '/players/$username': typeof PlayersUsernameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/seasons': typeof SeasonsRoute
   '/players/$username': typeof PlayersUsernameRoute
 }
@@ -51,20 +59,28 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/how-it-works': typeof HowItWorksRoute
   '/seasons': typeof SeasonsRoute
   '/players/$username': typeof PlayersUsernameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/seasons' | '/players/$username'
+  fullPaths: '/' | '/auth' | '/how-it-works' | '/seasons' | '/players/$username'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/seasons' | '/players/$username'
-  id: '__root__' | '/' | '/auth' | '/seasons' | '/players/$username'
+  to: '/' | '/auth' | '/how-it-works' | '/seasons' | '/players/$username'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/how-it-works'
+    | '/seasons'
+    | '/players/$username'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  HowItWorksRoute: typeof HowItWorksRoute
   SeasonsRoute: typeof SeasonsRoute
   PlayersUsernameRoute: typeof PlayersUsernameRoute
 }
@@ -83,6 +99,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-it-works': {
+      id: '/how-it-works'
+      path: '/how-it-works'
+      fullPath: '/how-it-works'
+      preLoaderRoute: typeof HowItWorksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/seasons': {
@@ -105,6 +128,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  HowItWorksRoute: HowItWorksRoute,
   SeasonsRoute: SeasonsRoute,
   PlayersUsernameRoute: PlayersUsernameRoute,
 }
