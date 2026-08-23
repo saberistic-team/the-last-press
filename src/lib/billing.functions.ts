@@ -4,6 +4,14 @@ import type { PaddleEnv } from "@/lib/paddle.server";
 
 type Env = PaddleEnv;
 
+export type Invoice = {
+  id: string;
+  number: string | null;
+  at: string | null;
+  total: string | null;
+  currency: string | null;
+};
+
 async function loadSubscription(userId: string, environment: Env) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data } = await supabaseAdmin
@@ -23,9 +31,9 @@ export const getBillingSummary = createServerFn({ method: "POST" })
   .inputValidator((input: { environment: Env }) => input)
   .handler(async ({ data, context }) => {
     const sub = await loadSubscription(context.userId, data.environment);
-    if (!sub) return { subscription: null, invoices: [] as Array<Record<string, unknown>> };
+    if (!sub) return { subscription: null, invoices: [] as Invoice[] };
 
-    let invoices: Array<Record<string, unknown>> = [];
+    let invoices: Invoice[] = [];
     try {
       const { gatewayFetch } = await import("@/lib/paddle.server");
       const res = await gatewayFetch(
