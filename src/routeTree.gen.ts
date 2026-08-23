@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
 import { Route as SeasonsRouteImport } from './routes/seasons'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as PlayersUsernameRouteImport } from './routes/players.$username'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
@@ -48,6 +49,11 @@ const SeasonsRoute = SeasonsRouteImport.update({
   path: '/seasons',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlayersUsernameRoute = PlayersUsernameRouteImport.update({
   id: '/players/$username',
   path: '/players/$username',
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
   '/seasons': typeof SeasonsRoute
+  '/terms': typeof TermsRoute
   '/players/$username': typeof PlayersUsernameRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
   '/seasons': typeof SeasonsRoute
+  '/terms': typeof TermsRoute
   '/players/$username': typeof PlayersUsernameRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
   '/seasons': typeof SeasonsRoute
+  '/terms': typeof TermsRoute
   '/players/$username': typeof PlayersUsernameRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/how-it-works'
     | '/seasons'
+    | '/terms'
     | '/players/$username'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/how-it-works'
     | '/seasons'
+    | '/terms'
     | '/players/$username'
     | '/api/public/payments/webhook'
   id:
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/how-it-works'
     | '/seasons'
+    | '/terms'
     | '/players/$username'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
@@ -131,6 +143,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   HowItWorksRoute: typeof HowItWorksRoute
   SeasonsRoute: typeof SeasonsRoute
+  TermsRoute: typeof TermsRoute
   PlayersUsernameRoute: typeof PlayersUsernameRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
@@ -179,6 +192,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeasonsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/players/$username': {
       id: '/players/$username'
       path: '/players/$username'
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   HowItWorksRoute: HowItWorksRoute,
   SeasonsRoute: SeasonsRoute,
+  TermsRoute: TermsRoute,
   PlayersUsernameRoute: PlayersUsernameRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
