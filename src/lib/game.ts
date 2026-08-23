@@ -93,8 +93,10 @@ export function formatDuration(ms: number) {
   if (mins < 60) return `${mins} min`;
   const hours = mins / 60;
   if (hours < 24) return Number.isInteger(hours) ? `${hours}h` : `${Math.floor(hours)}h ${mins % 60}m`;
-  const days = Math.round((hours / 24) * 10) / 10;
-  return `${days}d`;
+  const days = Math.round(hours / 24);
+  if (days === 30) return "1 month";
+  if (days % 7 === 0) return days === 7 ? "1 week" : `${days / 7} weeks`;
+  return days === 1 ? "1 day" : `${days} days`;
 }
 
 export function relativeTime(iso: string | null | undefined) {
