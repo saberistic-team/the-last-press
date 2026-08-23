@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TopNav } from "@/components/TopNav";
-import { formatDuration, MAX_DURATION_MS, MIN_DURATION_MS } from "@/lib/game";
+import { formatDuration, DEFAULT_DURATION_MS } from "@/lib/game";
 
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
