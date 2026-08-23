@@ -1,5 +1,31 @@
-export const MIN_DURATION_MS = 5 * 60 * 1000;
-export const MAX_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
+const HOUR = 60 * 60 * 1000;
+const DAY = 24 * HOUR;
+
+/** The only clock lengths a season can run at. */
+export const DURATION_BUCKETS = [
+  1 * HOUR,
+  3 * HOUR,
+  6 * HOUR,
+  12 * HOUR,
+  1 * DAY,
+  3 * DAY,
+  7 * DAY,
+  14 * DAY,
+  30 * DAY,
+] as const;
+
+export const DEFAULT_DURATION_MS = 1 * DAY;
+export const MIN_DURATION_MS = DURATION_BUCKETS[0];
+export const MAX_DURATION_MS = DURATION_BUCKETS[DURATION_BUCKETS.length - 1]!;
+
+/** Index of the closest bucket to a given duration. */
+export function bucketIndex(ms: number) {
+  let best = 0;
+  for (let i = 1; i < DURATION_BUCKETS.length; i++) {
+    if (Math.abs(DURATION_BUCKETS[i]! - ms) < Math.abs(DURATION_BUCKETS[best]! - ms)) best = i;
+  }
+  return best;
+}
 
 export type SeasonRow = {
   id: string;
