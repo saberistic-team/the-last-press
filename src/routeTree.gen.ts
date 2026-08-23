@@ -14,6 +14,7 @@ import { Route as AccountRouteImport } from './routes/account'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HowItWorksRouteImport } from './routes/how-it-works'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RefundsRouteImport } from './routes/refunds'
 import { Route as SeasonsRouteImport } from './routes/seasons'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -43,6 +44,11 @@ const AuthRoute = AuthRouteImport.update({
 const HowItWorksRoute = HowItWorksRouteImport.update({
   id: '/how-it-works',
   path: '/how-it-works',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RefundsRoute = RefundsRouteImport.update({
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/privacy': typeof PrivacyRoute
   '/refunds': typeof RefundsRoute
   '/seasons': typeof SeasonsRoute
   '/terms': typeof TermsRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/privacy': typeof PrivacyRoute
   '/refunds': typeof RefundsRoute
   '/seasons': typeof SeasonsRoute
   '/terms': typeof TermsRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/how-it-works': typeof HowItWorksRoute
+  '/privacy': typeof PrivacyRoute
   '/refunds': typeof RefundsRoute
   '/seasons': typeof SeasonsRoute
   '/terms': typeof TermsRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/how-it-works'
+    | '/privacy'
     | '/refunds'
     | '/seasons'
     | '/terms'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/how-it-works'
+    | '/privacy'
     | '/refunds'
     | '/seasons'
     | '/terms'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/how-it-works'
+    | '/privacy'
     | '/refunds'
     | '/seasons'
     | '/terms'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AuthRoute: typeof AuthRoute
   HowItWorksRoute: typeof HowItWorksRoute
+  PrivacyRoute: typeof PrivacyRoute
   RefundsRoute: typeof RefundsRoute
   SeasonsRoute: typeof SeasonsRoute
   TermsRoute: typeof TermsRoute
@@ -196,6 +209,13 @@ declare module '@tanstack/react-router' {
       path: '/how-it-works'
       fullPath: '/how-it-works'
       preLoaderRoute: typeof HowItWorksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/refunds': {
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AuthRoute: AuthRoute,
   HowItWorksRoute: HowItWorksRoute,
+  PrivacyRoute: PrivacyRoute,
   RefundsRoute: RefundsRoute,
   SeasonsRoute: SeasonsRoute,
   TermsRoute: TermsRoute,
