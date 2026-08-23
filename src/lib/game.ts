@@ -110,9 +110,12 @@ export function relativeTime(iso: string | null | undefined) {
   return `${d}d ${h % 24}h ago`;
 }
 
+/** Winner moves the clock one bucket up, one down, or keeps it. */
 export function nextDurationMs(current: number, choice: "double" | "half" | "keep") {
-  const raw = choice === "double" ? current * 2 : choice === "half" ? current / 2 : current;
-  return Math.min(MAX_DURATION_MS, Math.max(MIN_DURATION_MS, Math.round(raw)));
+  const i = bucketIndex(current);
+  const step = choice === "double" ? 1 : choice === "half" ? -1 : 0;
+  const next = Math.min(DURATION_BUCKETS.length - 1, Math.max(0, i + step));
+  return DURATION_BUCKETS[next]!;
 }
 
 export type Intensity = "calm" | "tense" | "warning" | "critical" | "final" | "countdown";
