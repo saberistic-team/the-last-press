@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as SeasonsRouteImport } from './routes/seasons'
 import { Route as PlayersUsernameRouteImport } from './routes/players.$username'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SeasonsRoute = SeasonsRouteImport.update({
+  id: '/seasons',
+  path: '/seasons',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PlayersUsernameRoute = PlayersUsernameRouteImport.update({
   id: '/players/$username',
   path: '/players/$username',
@@ -32,30 +38,34 @@ const PlayersUsernameRoute = PlayersUsernameRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/seasons': typeof SeasonsRoute
   '/players/$username': typeof PlayersUsernameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/seasons': typeof SeasonsRoute
   '/players/$username': typeof PlayersUsernameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/seasons': typeof SeasonsRoute
   '/players/$username': typeof PlayersUsernameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/players/$username'
+  fullPaths: '/' | '/auth' | '/seasons' | '/players/$username'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/players/$username'
-  id: '__root__' | '/' | '/auth' | '/players/$username'
+  to: '/' | '/auth' | '/seasons' | '/players/$username'
+  id: '__root__' | '/' | '/auth' | '/seasons' | '/players/$username'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  SeasonsRoute: typeof SeasonsRoute
   PlayersUsernameRoute: typeof PlayersUsernameRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/seasons': {
+      id: '/seasons'
+      path: '/seasons'
+      fullPath: '/seasons'
+      preLoaderRoute: typeof SeasonsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/players/$username': {
       id: '/players/$username'
       path: '/players/$username'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  SeasonsRoute: SeasonsRoute,
   PlayersUsernameRoute: PlayersUsernameRoute,
 }
 export const routeTree = rootRouteImport
