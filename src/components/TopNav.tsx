@@ -81,6 +81,12 @@ export function TopNav() {
                   {profile.username}
                 </Link>
               )}
+              <Link
+                to="/account"
+                className="label-caps text-[10px] text-muted-foreground hover:text-foreground"
+              >
+                Account
+              </Link>
               <button
                 onClick={() => void signOut()}
                 className="label-caps text-[10px] text-muted-foreground hover:text-foreground"
@@ -118,6 +124,11 @@ export function TopNav() {
               {l.label}
             </Link>
           ))}
+          {session && (
+            <Link to="/account" onClick={() => setOpen(false)} className="label-caps py-1.5 text-[11px] text-muted-foreground">
+              Account
+            </Link>
+          )}
           {isAdmin && (
             <Link to="/admin" onClick={() => setOpen(false)} className="label-caps py-1.5 text-[11px] text-signal">
               Admin

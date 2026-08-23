@@ -97,6 +97,7 @@ export type Database = {
           is_member: boolean
           presses_remaining: number
           username: string
+          username_set: boolean
         }
         Insert: {
           allowance_month?: string
@@ -108,6 +109,7 @@ export type Database = {
           is_member?: boolean
           presses_remaining?: number
           username: string
+          username_set?: boolean
         }
         Update: {
           allowance_month?: string
@@ -119,6 +121,7 @@ export type Database = {
           is_member?: boolean
           presses_remaining?: number
           username?: string
+          username_set?: boolean
         }
         Relationships: []
       }
@@ -304,6 +307,7 @@ export type Database = {
       bot_press: { Args: never; Returns: Json }
       crowd_tick: { Args: never; Returns: Json }
       duration_buckets: { Args: never; Returns: number[] }
+      expire_membership: { Args: { _user_id: string }; Returns: undefined }
       has_active_subscription: {
         Args: { check_env?: string; user_uuid: string }
         Returns: boolean

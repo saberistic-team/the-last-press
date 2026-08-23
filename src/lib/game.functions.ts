@@ -58,7 +58,7 @@ export const claimUsername = createServerFn({ method: "POST" })
     }
     const { error } = await supabaseAdmin
       .from("profiles")
-      .upsert({ id: context.userId, username: data.username }, { onConflict: "id" });
+      .upsert({ id: context.userId, username: data.username, username_set: true }, { onConflict: "id" });
     if (error) return { ok: false as const, error: error.message };
     return { ok: true as const };
   });

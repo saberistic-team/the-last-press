@@ -55,12 +55,13 @@ async function handleSubscriptionCreated(data: any, env: PaddleEnv) {
 }
 
 async function handleSubscriptionUpdated(data: any, env: PaddleEnv) {
-  const { id, status, currentBillingPeriod, scheduledChange } = data;
+  const { id, customerId, status, currentBillingPeriod, scheduledChange } = data;
 
   await getSupabase()
     .from("subscriptions")
     .update({
       status,
+      ...(customerId ? { paddle_customer_id: customerId } : {}),
       current_period_start: currentBillingPeriod?.startsAt,
       current_period_end: currentBillingPeriod?.endsAt,
       cancel_at_period_end: scheduledChange?.action === "cancel",
@@ -73,11 +74,44 @@ async function handleSubscriptionUpdated(data: any, env: PaddleEnv) {
 async function handleSubscriptionCanceled(data: any, env: PaddleEnv) {
   await getSupabase()
     .from("subscriptions")
-    .update({ status: "canceled", updated_at: new Date().toISOString() })
+    .update({
+      status: "canceled",
+      cancel_at_period_end: true,
+      updated_at: new Date().toISOString(),
+    })
     .eq("paddle_subscription_id", data.id)
     .eq("environment", env);
 }
+
+/** Renewal payments extend the paid period; keep the local row in step. */
+async function handleTransactionCompleted(data: any, env: PaddleEnv) {
+  const subscriptionId = data.subscriptionId;
+  if (!subscriptionId) return;
+  const period = data.billingPeriod;
+  await getSupabase()
+    .from("subscriptions")
+    .update({
+      status: "active",
+      ...(period?.startsAt ? { current_period_start: period.startsAt } : {}),
+      ...(period?.endsAt ? { current_period_end: period.endsAt } : {}),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("paddle_subscription_id", subscriptionId)
+    .eq("environment", env);
+}
+
+/** A failed charge puts the subscription into dunning; surface it in the UI. */
+async function handleTransactionPaymentFailed(data: any, env: PaddleEnv) {
+  const subscriptionId = data.subscriptionId;
+  if (!subscriptionId) return;
+  await getSupabase()
+    .from("subscriptions")
+    .update({ status: "past_due", updated_at: new Date().toISOString() })
+    .eq("paddle_subscription_id", subscriptionId)
+    .eq("environment", env);
+}
 /* eslint-enable @typescript-eslint/no-explicit-any */
+
 
 async function handleWebhook(req: Request, env: PaddleEnv) {
   const event = await verifyWebhook(req, env);
@@ -91,6 +125,12 @@ async function handleWebhook(req: Request, env: PaddleEnv) {
       break;
     case EventName.SubscriptionCanceled:
       await handleSubscriptionCanceled(event.data, env);
+      break;
+    case EventName.TransactionCompleted:
+      await handleTransactionCompleted(event.data, env);
+      break;
+    case EventName.TransactionPaymentFailed:
+      await handleTransactionPaymentFailed(event.data, env);
       break;
     default:
       console.log("Unhandled event:", event.eventType);
