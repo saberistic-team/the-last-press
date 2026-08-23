@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { MembershipButton } from "@/components/MembershipButton";
 import { TopNav } from "@/components/TopNav";
 import { Countdown } from "@/components/game/Countdown";
 import { PressButton } from "@/components/game/PressButton";
@@ -18,6 +19,7 @@ import {
   nextDurationMs,
   MAX_DURATION_MS,
   MIN_DURATION_MS,
+  DEFAULT_DURATION_MS,
 } from "@/lib/game";
 import { sfx } from "@/lib/feedback";
 
@@ -53,7 +55,7 @@ function Live() {
   const lastTick = useRef(-1);
 
   const season = data?.current ?? null;
-  const duration = season?.duration_ms ?? MIN_DURATION_MS;
+  const duration = season?.duration_ms ?? DEFAULT_DURATION_MS;
   const remaining = season?.status === "active" ? remainingMs(season.timer_expires_at) : 0;
   const intensity = intensityFor(remaining, duration);
 
@@ -169,6 +171,17 @@ function Live() {
             />
           </div>
 
+          {session && profile && !profile.is_member && (
+            <div className="mt-6 flex flex-col items-center gap-2">
+              <p className="text-xs text-muted-foreground">
+                {profile.presses_remaining <= 0
+                  ? "Out of presses. Membership adds 10 every month."
+                  : "Members get 10 extra presses every month."}
+              </p>
+              <MembershipButton />
+            </div>
+          )}
+
           <dl className="mt-12 grid w-full max-w-lg grid-cols-3 gap-4 border-t border-border/60 pt-6 text-center">
             <div>
               <dt className="label-caps text-[10px] text-muted-foreground">Players</dt>
@@ -222,15 +235,15 @@ function NextDurationPicker({ current }: { current: number }) {
   }
 
   const options: Array<{ key: "double" | "half" | "keep"; label: string }> = [
-    { key: "half", label: "Halve it" },
+    { key: "half", label: "One step shorter" },
     { key: "keep", label: "Keep it" },
-    { key: "double", label: "Double it" },
+    { key: "double", label: "One step longer" },
   ];
 
   return (
     <div className="mt-6">
       <p className="label-caps text-[10px] text-muted-foreground">
-        You won. Choose the next season's clock ({formatDuration(MIN_DURATION_MS)} –{" "}
+        You won. Move the next season's clock one step ({formatDuration(MIN_DURATION_MS)} –{" "}
         {formatDuration(MAX_DURATION_MS)})
       </p>
       <div className="mt-3 flex flex-wrap justify-center gap-2">

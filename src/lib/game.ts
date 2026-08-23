@@ -1,5 +1,31 @@
-export const MIN_DURATION_MS = 5 * 60 * 1000;
-export const MAX_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
+const HOUR = 60 * 60 * 1000;
+const DAY = 24 * HOUR;
+
+/** The only clock lengths a season can run at. */
+export const DURATION_BUCKETS = [
+  1 * HOUR,
+  3 * HOUR,
+  6 * HOUR,
+  12 * HOUR,
+  1 * DAY,
+  3 * DAY,
+  7 * DAY,
+  14 * DAY,
+  30 * DAY,
+] as const;
+
+export const DEFAULT_DURATION_MS = 1 * DAY;
+export const MIN_DURATION_MS = DURATION_BUCKETS[0];
+export const MAX_DURATION_MS = DURATION_BUCKETS[DURATION_BUCKETS.length - 1]!;
+
+/** Index of the closest bucket to a given duration. */
+export function bucketIndex(ms: number) {
+  let best = 0;
+  for (let i = 1; i < DURATION_BUCKETS.length; i++) {
+    if (Math.abs(DURATION_BUCKETS[i]! - ms) < Math.abs(DURATION_BUCKETS[best]! - ms)) best = i;
+  }
+  return best;
+}
 
 export type SeasonRow = {
   id: string;
@@ -67,8 +93,10 @@ export function formatDuration(ms: number) {
   if (mins < 60) return `${mins} min`;
   const hours = mins / 60;
   if (hours < 24) return Number.isInteger(hours) ? `${hours}h` : `${Math.floor(hours)}h ${mins % 60}m`;
-  const days = Math.round((hours / 24) * 10) / 10;
-  return `${days}d`;
+  const days = Math.round(hours / 24);
+  if (days === 30) return "1 month";
+  if (days % 7 === 0) return days === 7 ? "1 week" : `${days / 7} weeks`;
+  return days === 1 ? "1 day" : `${days} days`;
 }
 
 export function relativeTime(iso: string | null | undefined) {
@@ -84,9 +112,12 @@ export function relativeTime(iso: string | null | undefined) {
   return `${d}d ${h % 24}h ago`;
 }
 
+/** Winner moves the clock one bucket up, one down, or keeps it. */
 export function nextDurationMs(current: number, choice: "double" | "half" | "keep") {
-  const raw = choice === "double" ? current * 2 : choice === "half" ? current / 2 : current;
-  return Math.min(MAX_DURATION_MS, Math.max(MIN_DURATION_MS, Math.round(raw)));
+  const i = bucketIndex(current);
+  const step = choice === "double" ? 1 : choice === "half" ? -1 : 0;
+  const next = Math.min(DURATION_BUCKETS.length - 1, Math.max(0, i + step));
+  return DURATION_BUCKETS[next]!;
 }
 
 export type Intensity = "calm" | "tense" | "warning" | "critical" | "final" | "countdown";

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { TopNav } from "@/components/TopNav";
-import { formatDuration, MAX_DURATION_MS, MIN_DURATION_MS } from "@/lib/game";
+import { MembershipButton } from "@/components/MembershipButton";
+import { formatDuration, DEFAULT_DURATION_MS } from "@/lib/game";
 
 export const Route = createFileRoute("/how-it-works")({
   head: () => ({
@@ -47,7 +48,7 @@ const rules = [
   {
     n: "05",
     t: "The winner sets the next clock",
-    d: `The champion chooses to double, halve or keep the duration, within ${formatDuration(MIN_DURATION_MS)} and ${formatDuration(MAX_DURATION_MS)}.`,
+    d: `The champion moves the clock one step up, one step down, or keeps it — 1h, 3h, 6h, 12h, 1 day, 3 days, 1 week, 2 weeks, 1 month. Seasons start at ${formatDuration(DEFAULT_DURATION_MS)}.`,
   },
   {
     n: "06",
@@ -91,12 +92,9 @@ function HowItWorks() {
           <p className="mt-4 text-xs text-muted-foreground">
             Watching, the live timer and every profile stay free forever.
           </p>
-          <Link
-            to="/auth"
-            className="mt-6 inline-block rounded-sm bg-primary px-6 py-3 label-caps text-xs text-primary-foreground"
-          >
-            Create an account
-          </Link>
+          <div className="mt-6">
+            <MembershipButton />
+          </div>
         </section>
       </main>
     </div>

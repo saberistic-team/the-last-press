@@ -132,7 +132,7 @@ export const adminUpdateSeason = createServerFn({ method: "POST" })
     const db = await assertAdmin(context.userId);
     const patch: { duration_ms?: number; status?: string } = {};
     if (typeof data.duration_ms === "number") {
-      patch.duration_ms = Math.min(604800000, Math.max(300000, Math.round(data.duration_ms)));
+      patch.duration_ms = Math.min(2592000000, Math.max(60000, Math.round(data.duration_ms)));
     }
     if (data.status) patch.status = data.status;
     const { error } = await db.from("seasons").update(patch).eq("id", data.seasonId);
