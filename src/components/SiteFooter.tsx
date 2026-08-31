@@ -7,8 +7,7 @@ export function SiteFooter() {
     <footer className="mt-20 border-t border-border/60 px-4 py-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 text-[11px] text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>
-          © {new Date().getFullYear()} {SELLER_NAME}. Orders are processed by our reseller Paddle.com,
-          the Merchant of Record.
+          © {new Date().getFullYear()} {SELLER_NAME}. Payments are processed securely by Stripe.
         </p>
         <nav className="flex flex-wrap gap-4">
           <Link to="/how-it-works" className="hover:text-foreground">

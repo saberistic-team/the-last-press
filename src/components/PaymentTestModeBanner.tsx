@@ -1,7 +1,16 @@
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getStripeEnvironmentSafe } from "@/lib/stripe";
 
 export function PaymentTestModeBanner() {
-  if (getPaddleEnvironment() !== "sandbox") return null;
+  const env = getStripeEnvironmentSafe();
+
+  if (env === null) {
+    return (
+      <div className="w-full border-b border-destructive/40 bg-destructive/10 px-4 py-1.5 text-center text-[11px] tracking-wide text-destructive">
+        Checkout is not configured for this build yet.
+      </div>
+    );
+  }
+  if (env !== "sandbox") return null;
 
   return (
     <div className="w-full border-b border-border bg-muted px-4 py-1.5 text-center text-[11px] tracking-wide text-muted-foreground">

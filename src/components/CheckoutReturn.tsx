@@ -4,8 +4,8 @@ import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
 
 /**
- * After a successful Paddle checkout the user comes back with ?checkout=success.
- * The subscription row only exists once Paddle's webhook lands, so we show an
+ * After a successful Stripe checkout the user comes back with ?checkout=success.
+ * The subscription row only exists once Stripe's webhook lands, so we show an
  * "activating" state and poll until it does (realtime covers the fast path).
  */
 export function CheckoutReturn() {
