@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { PaddleEnv } from "@/lib/paddle.server";
+import type { StripeEnv } from "@/lib/stripe.server";
 
-type Env = PaddleEnv;
+type Env = StripeEnv;
 
 export type Invoice = {
   id: string;
@@ -10,7 +10,19 @@ export type Invoice = {
   at: string | null;
   total: string | null;
   currency: string | null;
+  url: string | null;
 };
+
+const ZERO_DECIMAL = new Set([
+  "bif", "clp", "djf", "gnf", "jpy", "kmf", "krw", "mga",
+  "pyg", "rwf", "ugx", "vnd", "vuv", "xaf", "xof", "xpf",
+]);
+
+function formatAmount(amount: number | null | undefined, currency: string): string {
+  const value = amount ?? 0;
+  const major = ZERO_DECIMAL.has(currency.toLowerCase()) ? value : value / 100;
+  return major.toFixed(ZERO_DECIMAL.has(currency.toLowerCase()) ? 0 : 2);
+}
 
 async function loadSubscription(userId: string, environment: Env) {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -35,26 +47,19 @@ export const getBillingSummary = createServerFn({ method: "POST" })
 
     let invoices: Invoice[] = [];
     try {
-      const { gatewayFetch } = await import("@/lib/paddle.server");
-      const res = await gatewayFetch(
-        data.environment,
-        `/transactions?subscription_id=${encodeURIComponent(sub.paddle_subscription_id)}&status=completed&per_page=10`,
-      );
-      const json = (await res.json()) as {
-        data?: Array<{
-          id: string;
-          billed_at?: string;
-          created_at?: string;
-          invoice_number?: string;
-          details?: { totals?: { grand_total?: string; currency_code?: string } };
-        }>;
-      };
-      invoices = (json.data ?? []).map((t) => ({
-        id: t.id,
-        number: t.invoice_number ?? null,
-        at: t.billed_at ?? t.created_at ?? null,
-        total: t.details?.totals?.grand_total ?? null,
-        currency: t.details?.totals?.currency_code ?? null,
+      const { createStripeClient } = await import("@/lib/stripe.server");
+      const stripe = createStripeClient(data.environment);
+      const list = await stripe.invoices.list({
+        customer: sub.stripe_customer_id,
+        limit: 10,
+      });
+      invoices = list.data.map((inv) => ({
+        id: inv.id ?? "",
+        number: inv.number ?? null,
+        at: inv.created ? new Date(inv.created * 1000).toISOString() : null,
+        total: formatAmount(inv.amount_paid, inv.currency),
+        currency: inv.currency?.toUpperCase() ?? null,
+        url: inv.hosted_invoice_url ?? null,
       }));
     } catch (e) {
       console.error("Failed to load invoices", e);
@@ -63,24 +68,26 @@ export const getBillingSummary = createServerFn({ method: "POST" })
     return { subscription: sub, invoices };
   });
 
-/** Hosted portal for updating the payment method / viewing invoices. */
+/** Hosted Stripe billing portal for payment method / invoice management. */
 export const getBillingPortalUrl = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { environment: Env }) => input)
+  .inputValidator((input: { environment: Env; returnUrl?: string | undefined }) => input)
   .handler(async ({ data, context }) => {
     const sub = await loadSubscription(context.userId, data.environment);
     if (!sub) return { ok: false as const, error: "No membership found." };
 
-    const { getPaddleClient } = await import("@/lib/paddle.server");
-    const paddle = getPaddleClient(sub.environment as Env);
-    const session = await paddle.customerPortalSessions.create(sub.paddle_customer_id, [
-      sub.paddle_subscription_id,
-    ]);
-    const url =
-      session.urls?.subscriptions?.[0]?.updateSubscriptionPaymentMethod ??
-      session.urls?.general?.overview;
-    if (!url) return { ok: false as const, error: "Could not open the billing portal." };
-    return { ok: true as const, url };
+    try {
+      const { createStripeClient } = await import("@/lib/stripe.server");
+      const stripe = createStripeClient(data.environment);
+      const portal = await stripe.billingPortal.sessions.create({
+        customer: sub.stripe_customer_id,
+        ...(data.returnUrl && { return_url: data.returnUrl }),
+      });
+      return { ok: true as const, url: portal.url };
+    } catch (e) {
+      const { getStripeErrorMessage } = await import("@/lib/stripe.server");
+      return { ok: false as const, error: getStripeErrorMessage(e) };
+    }
   });
 
 /** Cancel at the end of the paid period — the member keeps access until then. */
@@ -92,21 +99,22 @@ export const cancelMembership = createServerFn({ method: "POST" })
     if (!sub) return { ok: false as const, error: "No membership found." };
     if (sub.status === "canceled") return { ok: false as const, error: "Already canceled." };
 
-    const { getPaddleClient } = await import("@/lib/paddle.server");
-    const paddle = getPaddleClient(sub.environment as Env);
     try {
-      await paddle.subscriptions.cancel(sub.paddle_subscription_id, {
-        effectiveFrom: "next_billing_period",
+      const { createStripeClient } = await import("@/lib/stripe.server");
+      const stripe = createStripeClient(data.environment);
+      await stripe.subscriptions.update(sub.stripe_subscription_id, {
+        cancel_at_period_end: true,
       });
     } catch (e) {
-      return { ok: false as const, error: e instanceof Error ? e.message : "Cancel failed." };
+      const { getStripeErrorMessage } = await import("@/lib/stripe.server");
+      return { ok: false as const, error: getStripeErrorMessage(e) };
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin
       .from("subscriptions")
       .update({ cancel_at_period_end: true, updated_at: new Date().toISOString() })
-      .eq("paddle_subscription_id", sub.paddle_subscription_id);
+      .eq("stripe_subscription_id", sub.stripe_subscription_id);
 
     return { ok: true as const };
   });
@@ -119,19 +127,22 @@ export const resumeMembership = createServerFn({ method: "POST" })
     const sub = await loadSubscription(context.userId, data.environment);
     if (!sub) return { ok: false as const, error: "No membership found." };
 
-    const { getPaddleClient } = await import("@/lib/paddle.server");
-    const paddle = getPaddleClient(sub.environment as Env);
     try {
-      await paddle.subscriptions.update(sub.paddle_subscription_id, { scheduledChange: null });
+      const { createStripeClient } = await import("@/lib/stripe.server");
+      const stripe = createStripeClient(data.environment);
+      await stripe.subscriptions.update(sub.stripe_subscription_id, {
+        cancel_at_period_end: false,
+      });
     } catch (e) {
-      return { ok: false as const, error: e instanceof Error ? e.message : "Could not resume." };
+      const { getStripeErrorMessage } = await import("@/lib/stripe.server");
+      return { ok: false as const, error: getStripeErrorMessage(e) };
     }
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin
       .from("subscriptions")
       .update({ cancel_at_period_end: false, updated_at: new Date().toISOString() })
-      .eq("paddle_subscription_id", sub.paddle_subscription_id);
+      .eq("stripe_subscription_id", sub.stripe_subscription_id);
 
     return { ok: true as const };
   });
