@@ -1,14 +1,14 @@
 import { useEffect, useId } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { useSession } from "@/hooks/useSession";
 
 export type SubscriptionRow = {
   status: string;
   current_period_end: string | null;
   cancel_at_period_end: boolean | null;
-  paddle_subscription_id: string;
+  stripe_subscription_id: string;
 };
 
 const ACTIVE = ["active", "trialing", "past_due"];
@@ -27,9 +27,9 @@ export function useSubscription() {
     queryFn: async (): Promise<SubscriptionRow | null> => {
       const { data, error } = await supabase
         .from("subscriptions")
-        .select("status, current_period_end, cancel_at_period_end, paddle_subscription_id")
+        .select("status, current_period_end, cancel_at_period_end, stripe_subscription_id")
         .eq("user_id", userId!)
-        .eq("environment", getPaddleEnvironment())
+        .eq("environment", getStripeEnvironment())
         .order("created_at", { ascending: false })
         .limit(1)
         .maybeSingle();
