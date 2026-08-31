@@ -6,7 +6,7 @@ import { TopNav } from "@/components/TopNav";
 import { MembershipButton } from "@/components/MembershipButton";
 import { useMe } from "@/hooks/useSession";
 import { useSubscription } from "@/hooks/useSubscription";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getStripeEnvironment } from "@/lib/stripe";
 import {
   cancelMembership,
   getBillingPortalUrl,
@@ -50,7 +50,7 @@ function AccountPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [busy, setBusy] = useState(false);
-  const environment = getPaddleEnvironment();
+  const environment = getStripeEnvironment();
 
   useEffect(() => {
     if (ready && !session) void navigate({ to: "/auth", replace: true });
@@ -214,7 +214,7 @@ function AccountPage() {
                 ))}
               </ul>
               <p className="mt-3 text-[11px] text-muted-foreground">
-                Payments and receipts are handled by our reseller, Paddle.
+                Payments and receipts are handled securely by Stripe.
               </p>
             </Panel>
           )}

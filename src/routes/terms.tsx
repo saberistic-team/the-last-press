@@ -65,21 +65,13 @@ function Terms() {
           Membership is billed monthly at the price shown at checkout and renews automatically until
           cancelled. You can cancel any time from your account page; access and member presses continue
           until the end of the paid period. Payment, billing, tax, cancellation and refund mechanics are
-          governed by Paddle's Buyer Terms at{" "}
-          <a
-            className="text-primary underline"
-            href="https://www.paddle.com/legal/checkout-buyer-terms"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            paddle.com/legal/checkout-buyer-terms
-          </a>
-          .
+          handled by our payment processor, Stripe. Applicable sales tax or VAT is
+          calculated and added at checkout where required.
         </Section>
-        <Section n="8" t="Merchant of Record">
-          Our order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant
-          of Record for all our orders. Paddle provides all customer service inquiries and handles
-          returns.
+        <Section n="8" t="Seller and payment processing">
+          {SELLER_NAME} is the seller of record for all orders. Card payments, receipts and invoices are
+          processed by Stripe; we never see or store your full card details. Billing questions, refunds
+          and cancellations are handled by {SELLER_NAME} support.
         </Section>
         <Section n="9" t="Suspension and termination">
           We may suspend or terminate your access for material breach of these terms, non-payment,
@@ -103,7 +95,7 @@ function Terms() {
         </Section>
         <Section n="12" t="Contact">
           Questions about these terms: contact {SELLER_NAME} through the support channel listed on our
-          site. Billing and refund questions are handled by Paddle at paddle.net.
+          site. Billing and refund questions are handled by us directly.
         </Section>
       </LegalPage>
     </div>

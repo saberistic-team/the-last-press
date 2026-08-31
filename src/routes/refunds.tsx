@@ -10,7 +10,7 @@ export const Route = createFileRoute("/refunds")({
       {
         name: "description",
         content:
-          "Our 30-day money-back guarantee for The Last Person membership, and how to request a refund through Paddle.",
+          "Our 30-day money-back guarantee for The Last Person membership, and how to request a refund.",
       },
       { property: "og:title", content: "Refund Policy — The Last Person" },
       { property: "og:description", content: "30-day money-back guarantee on membership." },
@@ -31,17 +31,9 @@ function Refunds() {
           within 30 days of your order date. This applies to your most recent monthly charge.
         </Section>
         <Section n="02" t="How to request a refund">
-          Payments are processed by our reseller Paddle.com, the Merchant of Record. Request a refund at{" "}
-          <a
-            className="text-primary underline"
-            href="https://paddle.net"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            paddle.net
-          </a>{" "}
-          using the email address on your receipt, or contact {SELLER_NAME} support and we will raise it
-          for you. Refunds are returned to the original payment method, typically within 5–10 business
+          Contact {SELLER_NAME} support from the email address on your receipt and ask for a refund.
+          Payments are processed by Stripe, so approved refunds are issued back through Stripe to your
+          original payment method. Refunds are returned to the original payment method, typically within 5–10 business
           days once approved.
         </Section>
         <Section n="03" t="Cancelling instead of refunding">

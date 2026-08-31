@@ -38,7 +38,7 @@ function Privacy() {
           browser information, log and error data) for security, fraud prevention and reliability — our
           legitimate interest in keeping the service safe and working. Support messages you send us, to
           answer you. Membership status, so we know which presses you are entitled to. We do not collect
-          or store card details; Paddle handles payment data as the Merchant of Record.
+          or store card details; Stripe processes payment data on our behalf.
         </Section>
         <Section n="03" t="What is public">
           Your username, presses, season participation and wins are publicly visible — that is the point
@@ -46,8 +46,8 @@ function Privacy() {
         </Section>
         <Section n="04" t="Who we share it with">
           Service providers who host and operate the service on our behalf (cloud hosting, database,
-          authentication and error logging); Paddle.com as Merchant of Record for the sale of
-          memberships, subscription management, payments, tax compliance and invoicing; professional
+          authentication and error logging); Stripe for payment processing, subscription billing, tax
+          calculation and invoicing; professional
           advisers such as legal and accounting; and authorities where we are legally required to
           disclose.
         </Section>
