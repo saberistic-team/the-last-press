@@ -75,6 +75,35 @@ export function useGame() {
     };
   }, [qc, instanceId]);
 
+  // The moment the clock hits zero, ask the server to settle the season.
+  // Idempotent: the server only ends a season whose timer has really expired.
+  const current = query.data?.current;
+  const expiresAt = current?.status === "active" ? current.timer_expires_at : null;
+  useEffect(() => {
+    if (!expiresAt) return;
+    let cancelled = false;
+    let timer: number | undefined;
+
+    const attempt = async () => {
+      if (cancelled) return;
+      try {
+        await settleIfExpired();
+      } catch {
+        /* retry below */
+      }
+      void qc.invalidateQueries({ queryKey: ["game"] });
+      // Keep nudging every 4s in case a race left it unsettled.
+      if (!cancelled) timer = window.setTimeout(attempt, 4000);
+    };
+
+    const wait = Math.max(0, remainingMs(expiresAt)) + 300;
+    timer = window.setTimeout(attempt, wait);
+    return () => {
+      cancelled = true;
+      if (timer) window.clearTimeout(timer);
+    };
+  }, [expiresAt, qc]);
+
   return query;
 }
 
