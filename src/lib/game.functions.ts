@@ -14,6 +14,18 @@ export const getServerTime = createServerFn({ method: "GET" }).handler(async () 
   now: new Date().toISOString(),
 }));
 
+/**
+ * Public, idempotent: ends the active season if (and only if) its clock has
+ * actually run out on the server, and opens the next one. Safe to call from
+ * any viewer the moment the countdown hits zero; a scheduled job is the backstop.
+ */
+export const settleIfExpired = createServerFn({ method: "POST" }).handler(async () => {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin.rpc("settle_seasons");
+  if (error) throw new Error(error.message);
+  return data as { settled: boolean; season_id?: string; winner?: string | null };
+});
+
 export const pressButton = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {

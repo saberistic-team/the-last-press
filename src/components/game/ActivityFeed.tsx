@@ -5,7 +5,7 @@ export function ActivityFeed({ presses }: { presses: PressRow[] }) {
   if (presses.length === 0) {
     return (
       <p className="font-mono text-sm text-muted-foreground">
-        Nobody has pressed this season yet. The clock is running.
+        Nobody has pressed this season yet. The first press starts the clock.
       </p>
     );
   }
