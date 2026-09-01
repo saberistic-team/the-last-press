@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState, useId } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { getServerTime } from "@/lib/game.functions";
-import { setClockOffset, type PressRow, type SeasonRow } from "@/lib/game";
+import { getServerTime, settleIfExpired } from "@/lib/game.functions";
+import { remainingMs, setClockOffset, type PressRow, type SeasonRow } from "@/lib/game";
 
 export type GameSnapshot = {
   current: SeasonRow | null;
